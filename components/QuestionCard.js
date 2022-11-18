@@ -30,6 +30,11 @@ function QuestionCard({ data }) {
     setActiveQuestionIndex(activeQuestionIndex - 1);
   };
 
+  const submit = (e) => {
+    e.preventDefault();
+    console.log(datas);
+  };
+
   return (
     <>
       <div className="flex">
@@ -58,6 +63,12 @@ function QuestionCard({ data }) {
           bgClass="bg-green-500"
           disabled={activeQuestionIndex >= datas.length - 1}
           onClick={next}
+        />
+        <Button
+          label="Submit"
+          bgClass="bg-green-500"
+          disabled={activeQuestionIndex < datas.length - 1}
+          onClick={submit}
         />
       </div>
     </>
