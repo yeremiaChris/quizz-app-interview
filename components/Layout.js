@@ -3,7 +3,7 @@ import Button from "./form/Button";
 
 export default function Layout({ children }) {
   return (
-    <div className="mx-3 md:container md:mx-auto mt-10 flex justify-center items-center">
+    <div className="mx-3 md:container md:mx-auto mt-6 flex justify-center items-center">
       <div className="flex-1 flex flex-col gap-6 items-start">
         <div className="flex gap-3">
           <Button label="Login" />
