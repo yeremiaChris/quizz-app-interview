@@ -1,10 +1,17 @@
 import React from "react";
 
-function RadioButton({ label }) {
+function RadioButton({ label, modelValue, value, onChange }) {
   return (
-    <div>
-      <input id="test" type="radio" />
-      <label htmlFor="test" className="ml-4">
+    <div className="mb-2">
+      <input
+        className="cursor-pointer"
+        id={label}
+        value={value}
+        type="radio"
+        checked={value === modelValue}
+        onChange={onChange}
+      />
+      <label htmlFor={label} className="ml-4 cursor-pointer">
         {label}
       </label>
     </div>
