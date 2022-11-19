@@ -1,6 +1,12 @@
 import React from "react";
 
-function Button({ label, bgClass = "bg-blue-400", type = "button", disabled, onClick = () => {} }) {
+function Button({
+  label = "Label",
+  bgClass = "bg-blue-400",
+  type = "button",
+  disabled,
+  onClick = () => {},
+}) {
   return (
     <button
       type={type}

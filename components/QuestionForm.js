@@ -134,8 +134,10 @@ function QuestionForm({ data }) {
             <span>{activeQuestionIndex + 1}</span>
             <ul className="px-4">
               <li className="mb-3">
-                <p className={`${!question.error && "mb-3"}`}>{question.question}</p>
-                {question.error && <span className="text-sm text-red-400 ">{question.error}</span>}
+                <p className={`${!question.error && "mb-3"}`}>{question && question.question}</p>
+                {question.error && (
+                  <span className="text-sm text-red-400 ">{question && question.error}</span>
+                )}
                 {["Yes", "No"].map((item, index) => {
                   return (
                     <div key={index + index} className="flex items-center gap-4">
@@ -143,7 +145,7 @@ function QuestionForm({ data }) {
                         label={item}
                         value={item === "Yes" ? "True" : "False"}
                         onChange={handleChange}
-                        modelValue={question.answer}
+                        modelValue={question && question.answer}
                       />
                     </div>
                   );

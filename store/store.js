@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import globalReducer from "./index";
+import globalReducer from "./global";
 export default configureStore({
   reducer: {
     global: globalReducer,

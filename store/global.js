@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const index = createSlice({
-  name: "index",
+export const global = createSlice({
+  name: "global",
   initialState: {
     error: false,
+    message: "",
   },
   reducers: {
     setProps: (state, payload) => {
@@ -13,6 +14,6 @@ export const index = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setProps } = index.actions;
+export const { setProps } = global.actions;
 
-export default index.reducer;
+export default global.reducer;

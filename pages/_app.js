@@ -2,14 +2,17 @@ import Layout from "../components/Layout";
 import store from "../store/store";
 import "../styles/globals.css";
 import { Provider } from "react-redux";
+// import { AuthProvider } from "../firebase";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <Layout>
-      <Provider store={store}>
+    <Provider store={store}>
+      <Layout>
+        {/* <AuthProvider> */}
         <Component {...pageProps} />
-      </Provider>
-    </Layout>
+        {/* </AuthProvider> */}
+      </Layout>
+    </Provider>
   );
 }
 
