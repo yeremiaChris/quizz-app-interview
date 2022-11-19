@@ -3,23 +3,44 @@ import RadioButton from "./form/RadioButton";
 import Button from "./form/Button";
 function QuestionForm({ data }) {
   // state
+  // state to display start button before begin the quizz
+  const [isStart, setStart] = useState(true);
+
+  // data from api
   const [datas, setDatas] = useState(data);
+
+  // detect submit button is clicked and set the result
   const [isResult, setIsResult] = useState(false);
+
+  // set the score
   const [score, setScore] = useState(0);
+
+  // state for set the active form to display
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+
+  // obj current data
   const question = datas[activeQuestionIndex];
   // last state
 
-  // methods
   useEffect(() => {
     const dataFromLocalStorage = localStorage.getItem("datas");
+    setStart(true);
+    // resume quizz when only before we submit the form, if the form is submit then we refresh the form will be reset
     if (dataFromLocalStorage) {
-      setIsResult(true);
       const activeQuestionIndexFromLocalStorage = localStorage.getItem("activeQuestionIndex");
       setDatas(JSON.parse(dataFromLocalStorage));
-      setActiveQuestionIndex(parseInt(activeQuestionIndexFromLocalStorage));
+      setActiveQuestionIndex(parseInt(activeQuestionIndexFromLocalStorage) + 1);
     }
   }, []);
+
+  // methods
+  // required error handling
+  const errorHandling = () => {
+    const newData = datas.map((item) =>
+      item.id === question.id ? { ...item, error: "This field is required" } : item
+    );
+    setDatas(newData);
+  };
 
   // set data radio button to choice the answer
   const handleChange = (e) => {
@@ -33,6 +54,8 @@ function QuestionForm({ data }) {
     localStorage.setItem("datas", JSON.stringify(datas));
     localStorage.setItem("activeQuestionIndex", activeQuestionIndex);
   };
+
+  // reset local storage
   const resetLocalStorage = () => {
     localStorage.removeItem("datas", JSON.stringify(datas));
     localStorage.removeItem("activeQuestionIndex", activeQuestionIndex);
@@ -40,27 +63,35 @@ function QuestionForm({ data }) {
 
   // restart form
   const reStart = () => {
+    // set result to false to hide message of the result
     setIsResult(false);
-    // reset data
-    const newData = datas.map((item) => ({ ...item, answer: "" }));
-    setDatas(newData);
 
     // reset active question form
     setActiveQuestionIndex(0);
+
+    // reset localstorage when user is start the quizz
     resetLocalStorage();
+
+    // reset data when user is start
+    const newData = datas.map((item) => ({ ...item, answer: "" }));
+    setDatas(newData);
+
+    // set start to show the form
+    setStart(false);
   };
 
   // next button
   const next = (e) => {
     e.preventDefault();
+
+    // error handling when radio button is not checked
     if (!question.answer) {
-      const newData = datas.map((item) =>
-        item.id === question.id ? { ...item, error: "This field is required" } : item
-      );
-      setDatas(newData);
+      errorHandling();
     } else {
       setActiveQuestionIndex(activeQuestionIndex + 1);
     }
+
+    // set local storage when next button is clicked
     setLocalStorage();
   };
 
@@ -73,11 +104,10 @@ function QuestionForm({ data }) {
   // submit form
   const submit = (e) => {
     e.preventDefault();
+
+    // error handling before submitted
     if (!question.answer) {
-      const newData = datas.map((item) =>
-        item.id === question.id ? { ...item, error: "This field is required" } : item
-      );
-      setDatas(newData);
+      errorHandling();
     } else {
       const score = datas.filter((item) => item.correct_answer === item.answer);
       setScore(score.length);
@@ -90,7 +120,7 @@ function QuestionForm({ data }) {
 
   return (
     <>
-      {!isResult ? (
+      {!isResult && !isStart ? (
         <form onSubmit={submit}>
           <div className="flex">
             <span>{activeQuestionIndex + 1}</span>
@@ -149,11 +179,16 @@ function QuestionForm({ data }) {
               </h2>
             )}
 
-            {score <= datas.length / 2 &&
-              score !== datas.length &&
-              datas.some((el) => el.answer) && (
-                <Button label="Resume" bgClass="bg-yellow-500" onClick={() => setIsResult(false)} />
-              )}
+            {score <= datas.length / 2 && score !== datas.length && datas.some((el) => el.answer) && (
+              <Button
+                label="Resume"
+                bgClass="bg-yellow-500"
+                onClick={() => {
+                  setStart(false);
+                  setIsResult(false);
+                }}
+              />
+            )}
 
             <Button
               label={datas.every((el) => !el.answer) ? "Start Quizz" : "Restart"}
