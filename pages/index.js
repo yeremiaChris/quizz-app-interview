@@ -1,4 +1,4 @@
-import QuestionCard from "../components/QuestionCard";
+import QuestionForm from "../components/QuestionForm";
 import { get } from "../helpers/api";
 
 function index({ data }) {
@@ -8,7 +8,7 @@ function index({ data }) {
         Quizz <span className="text-blue-600">APP</span>
       </h1>
 
-      <QuestionCard data={data} />
+      <QuestionForm data={data} />
     </div>
   );
 }
@@ -27,7 +27,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      data: data.map((item, index) => ({ ...item, id: index, answer: "" })),
+      data: !data ? [] : data.map((item, index) => ({ ...item, id: index, answer: "", error: "" })),
     },
   };
 }
