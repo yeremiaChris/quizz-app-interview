@@ -22,6 +22,12 @@ function QuestionForm({ data }) {
   const question = datas[activeQuestionIndex];
   // last state
 
+  // create score
+  const handlingScore = (data) => {
+    const score = data.filter((item) => item.correct_answer === item.answer);
+    setScore(score.length);
+  };
+
   useEffect(() => {
     const dataFromLocalStorage = localStorage.getItem("datas");
     setStart(true);
@@ -29,6 +35,7 @@ function QuestionForm({ data }) {
     if (dataFromLocalStorage) {
       const activeQuestionIndexFromLocalStorage = localStorage.getItem("activeQuestionIndex");
       setDatas(JSON.parse(dataFromLocalStorage));
+      handlingScore(JSON.parse(dataFromLocalStorage));
       setActiveQuestionIndex(parseInt(activeQuestionIndexFromLocalStorage) + 1);
     }
   }, []);
@@ -109,10 +116,11 @@ function QuestionForm({ data }) {
     if (!question.answer) {
       errorHandling();
     } else {
-      const score = datas.filter((item) => item.correct_answer === item.answer);
-      setScore(score.length);
+      handlingScore(datas);
       setIsResult(true);
-      resetLocalStorage();
+      if (score <= datas.length / 2) {
+        resetLocalStorage();
+      }
     }
   };
 
