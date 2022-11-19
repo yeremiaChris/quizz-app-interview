@@ -1,13 +1,11 @@
 import { useRouter } from "next/router";
 import React from "react";
 import Button from "./form/Button";
-import { useSelector, useDispatch } from "react-redux";
 import PopupError from "./PopupError";
 
 export default function Layout({ children }) {
   const router = useRouter();
-  const global = useSelector((state) => state.global);
-  const isError = global.error;
+  const isError = false;
   return (
     <div className="mx-3 md:container md:mx-auto mt-6 flex justify-center items-center">
       {isError && <PopupError />}
