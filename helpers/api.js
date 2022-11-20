@@ -7,7 +7,6 @@ export const get = async (params) => {
     const res = await axios.get(BASE_URL, { params });
     data = res.data.results;
   } catch (error) {
-    console.log(error.response);
     Swal.fire({
       title: "Error!",
       text: "An error is occured !!",
