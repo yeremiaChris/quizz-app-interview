@@ -1,5 +1,7 @@
+import { getCookie, hasCookie } from "cookies-next";
 import QuestionForm from "../components/QuestionForm";
 import { get } from "../helpers/api";
+import { requiredAuthenticaton } from "../helpers/requiredAuthentication";
 
 function index({ data }) {
   return (
@@ -15,21 +17,26 @@ function index({ data }) {
 
 // fetching data here
 export async function getServerSideProps(context) {
-  const params = {
-    amount: 8,
-    category: 21,
-    difficulty: "medium",
-    type: "boolean",
-  };
+  return requiredAuthenticaton(context, async () => {
+    const params = {
+      amount: 8,
+      category: 21,
+      difficulty: "medium",
+      type: "boolean",
+    };
 
-  // get data
-  const data = await get(params);
-
-  return {
-    props: {
-      data: !data ? [] : data.map((item, index) => ({ ...item, id: index, answer: "", error: "" })),
-    },
-  };
+    // get data
+    const data = await get(params);
+    const user = context.req.cookies["user"];
+    return {
+      props: {
+        user,
+        data: !data
+          ? []
+          : data.map((item, index) => ({ ...item, id: index, answer: "", error: "" })),
+      },
+    };
+  });
 }
 
 export default index;
