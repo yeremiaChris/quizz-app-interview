@@ -12,10 +12,10 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <title>{title}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <meta name="description" content="This is meta description of quizz app"></meta>
+        <meta name="description" content="Quizz app description"></meta>
         <meta name="robots" content="noindex, nofollow" />
         <meta name="robots" content="index, follow" />
-        <meta name="title" content="Meta Tags — Preview, Edit and Generate" />
+        <meta name={title} content="Quizz Apps" />
         <meta
           name="description"
           content="With Meta Tags you can edit and experiment with your content then preview how your webpage will look on Google, Facebook, Twitter and more!"
@@ -23,11 +23,8 @@ function MyApp({ Component, pageProps }) {
 
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://metatags.io/" />
-        <meta property="og:title" content="Meta Tags — Preview, Edit and Generate" />
-        <meta
-          property="og:description"
-          content="With Meta Tags you can edit and experiment with your content then preview how your webpage will look on Google, Facebook, Twitter and more!"
-        />
+        <meta property={`og:${title}`} content="Quizz Apps" />
+        <meta property="og:description" content="Quizz app description" />
         <meta
           property="og:image"
           content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png"
@@ -35,7 +32,7 @@ function MyApp({ Component, pageProps }) {
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://metatags.io/" />
-        <meta property="twitter:title" content="Meta Tags — Preview, Edit and Generate" />
+        <meta property={`twitter:${title}`} content="Meta Tags — Preview, Edit and Generate" />
         <meta
           property="twitter:description"
           content="With Meta Tags you can edit and experiment with your content then preview how your webpage will look on Google, Facebook, Twitter and more!"
