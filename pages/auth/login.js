@@ -4,7 +4,7 @@ import InputField from "../../components/form/InputField";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/router";
 import { firebaseApp } from "../../firebase-config";
-import { getCookie, setCookie } from "cookies-next";
+import { setCookie } from "cookies-next";
 
 function Login() {
   const router = useRouter();
@@ -16,6 +16,7 @@ function Login() {
   const [loginForm, setLoginForm] = useState(initialState);
   const [errorField, setErrorField] = useState(initialState);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isRequest, setIsRequest] = useState(false);
 
   // error handling
   const errorHandlingFieldSubmit = () => {
@@ -32,7 +33,7 @@ function Login() {
 
   // cek error
   const isError = () => {
-    return Object.values(loginForm).every((el) => !el);
+    return Object.values(loginForm).some((el) => !el);
   };
 
   // onchange
@@ -43,7 +44,8 @@ function Login() {
   };
 
   // submit
-  const submit = () => {
+  const submit = (e) => {
+    e.preventDefault();
     if (isError()) {
       errorHandlingFieldSubmit();
     } else {
@@ -54,16 +56,21 @@ function Login() {
   const signIn = () => {
     const auth = getAuth(firebaseApp);
     const { email, password } = loginForm;
+    setIsRequest(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
         setCookie("user", JSON.stringify(user));
-        router.push("/");
-        // ...
       })
       .catch((error) => {
         setErrorMessage(error.code);
+      })
+      .finally(() => {
+        router.push("/");
+        localStorage.removeItem("datas");
+        localStorage.removeItem("activeQuestionIndex");
+        setIsRequest(false);
       });
   };
 
@@ -72,7 +79,10 @@ function Login() {
     router.push("/auth/register");
   };
   return (
-    <div className="mt-6 flex gap-4 flex-col items-center justify-center text-left">
+    <form
+      onSubmit={submit}
+      className="mt-6 flex gap-4 flex-col items-center justify-center text-left"
+    >
       <p className="text-red-500">{errorMessage}</p>
 
       <div className="justify-end flex gap-4 flex-col gap-4">
@@ -81,6 +91,7 @@ function Login() {
             <InputField
               errorMessage={errorField[key]}
               value={loginForm[key]}
+              type={key === "password" ? "password" : "text"}
               key={key}
               label={key}
               onChange={onChange}
@@ -89,12 +100,27 @@ function Login() {
         })}
         {/* <InputField label="Password" /> */}
         <div className="flex justify-end gap-4 mt-2">
-          <Button label="Register Page" onClick={redirect} />
-          <Button label="Login" onClick={submit} />
+          <Button label="Register Page" onClick={redirect} disabled={isRequest} />
+          <Button label="Submit" type="submit" disabled={isRequest} />
         </div>
       </div>
-    </div>
+    </form>
   );
+}
+
+export async function getServerSideProps(context) {
+  const user = context.req.cookies["user"];
+  if (user) {
+    return {
+      redirect: {
+        destination: "/",
+        permanet: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
 }
 
 export default Login;

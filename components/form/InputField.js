@@ -6,6 +6,7 @@ function InputField({
   value,
   placeholder = label + "...",
   errorMessage,
+  disabled = false,
   onChange = () => {},
 }) {
   const handleChange = (e) => {
@@ -25,6 +26,7 @@ function InputField({
       </label>
       <div className="mt-1">
         <input
+          disabled={disabled}
           type={type}
           name={label}
           id={label}

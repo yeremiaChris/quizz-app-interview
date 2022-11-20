@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import RadioButton from "./form/RadioButton";
 import Button from "./form/Button";
-function QuestionForm({ data }) {
+function QuestionForm({ data, isRequest }) {
   // state
   // state to display start button before begin the quizz
   const [isStart, setStart] = useState(true);
@@ -64,8 +64,8 @@ function QuestionForm({ data }) {
 
   // reset local storage
   const resetLocalStorage = () => {
-    localStorage.removeItem("datas", JSON.stringify(datas));
-    localStorage.removeItem("activeQuestionIndex", activeQuestionIndex);
+    localStorage.removeItem("datas");
+    localStorage.removeItem("activeQuestionIndex");
   };
 
   // restart form
@@ -128,14 +128,16 @@ function QuestionForm({ data }) {
 
   return (
     <>
-      {!isResult && !isStart ? (
+      {!isResult && !isStart && datas.length ? (
         <form onSubmit={submit}>
           <div className="flex">
             <span>{activeQuestionIndex + 1}</span>
             <ul className="px-4">
               <li className="mb-3">
-                <p className={`${!question.error && "mb-3"}`}>{question && question.question}</p>
-                {question.error && (
+                <p className={`${question && !question.error && "mb-3"}`}>
+                  {question && question.question}
+                </p>
+                {question && question.error && (
                   <span className="text-sm text-red-400 ">{question && question.error}</span>
                 )}
                 {["Yes", "No"].map((item, index) => {
@@ -156,56 +158,68 @@ function QuestionForm({ data }) {
 
           {/* handle action button */}
           <div className="flex justify-end gap-3 mb-2">
-            <Button label="Previous" disabled={activeQuestionIndex === 0} onClick={previous} />
+            <Button
+              label="Previous"
+              disabled={activeQuestionIndex === 0 || isRequest}
+              onClick={previous}
+            />
             {activeQuestionIndex < datas.length - 1 && (
               <Button
                 label="Next"
                 bgClass="bg-green-500"
-                disabled={activeQuestionIndex >= datas.length - 1}
+                disabled={activeQuestionIndex >= datas.length - 1 || isRequest}
                 onClick={next}
               />
             )}
 
             {/* submit button */}
             {activeQuestionIndex === datas.length - 1 && (
-              <Button label="Submit" type="submit" bgClass="bg-green-500" />
+              <Button label="Submit" type="submit" bgClass="bg-green-500" disabled={isRequest} />
             )}
           </div>
         </form>
       ) : (
         <div className="min-h-[200px] flex items-center justify-center">
-          <div className="grid items-center text-center gap-3">
-            {score > datas.length / 2 && (
-              <h2 className="text-3xl  font-bold text-green-500">Congratulations !!</h2>
-            )}
+          {datas.length ? (
+            <div className="grid items-center text-center gap-3">
+              {score > datas.length / 2 && (
+                <h2 className="text-3xl  font-bold text-green-500">Congratulations !!</h2>
+              )}
 
-            {datas.some((el) => el.answer) && (
-              <h2
-                className={`font-bold text-3xl mb-2 ${
-                  score <= datas.length / 2 ? "text-red-400" : "text-green-500"
-                }`}
-              >
-                Your Score {score} out of {datas.length}
-              </h2>
-            )}
+              {datas.some((el) => el.answer) && (
+                <h2
+                  className={`font-bold text-3xl mb-2 ${
+                    score <= datas.length / 2 ? "text-red-400" : "text-green-500"
+                  }`}
+                >
+                  Your Score {score} out of {datas.length}
+                </h2>
+              )}
 
-            {score <= datas.length / 2 && score !== datas.length && datas.some((el) => el.answer) && (
+              {score <= datas.length / 2 &&
+                score !== datas.length &&
+                datas.some((el) => el.answer) && (
+                  <Button
+                    label="Resume"
+                    bgClass="bg-yellow-500"
+                    disabled={isRequest}
+                    onClick={() => {
+                      setStart(false);
+                      setIsResult(false);
+                    }}
+                  />
+                )}
+
               <Button
-                label="Resume"
-                bgClass="bg-yellow-500"
-                onClick={() => {
-                  setStart(false);
-                  setIsResult(false);
-                }}
+                label={datas.every((el) => !el.answer) ? "Start Quizz" : "Restart"}
+                bgClass="bg-green-500"
+                disabled={isRequest}
+                onClick={reStart}
               />
-            )}
-
-            <Button
-              label={datas.every((el) => !el.answer) ? "Start Quizz" : "Restart"}
-              bgClass="bg-green-500"
-              onClick={reStart}
-            />
-          </div>
+            </div>
+          ) : (
+            <p>No data is available please cek your connection</p>
+          )}
         </div>
       )}
     </>

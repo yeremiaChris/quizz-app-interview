@@ -16,22 +16,26 @@ function Register() {
 
   const [registerForm, setRegisterForm] = useState(initialState);
   const [errorField, setErrorField] = useState(initialState);
+  const [isRequest, setIsRequest] = useState(false);
   const router = useRouter();
 
   // sign up
   const signUp = () => {
     const { email, password } = registerForm;
     const auth = getAuth(firebaseApp);
+    setIsRequest(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
         router.push("/auth/login");
         // ...
       })
       .catch((error) => {
         setErrorMessage(error.code);
         // ..
+      })
+      .finally(() => {
+        setIsRequest(false);
       });
   };
 
@@ -42,6 +46,10 @@ function Register() {
       if (Object.hasOwnProperty.call(registerForm, key)) {
         if (!registerForm[key].length) {
           error = { ...error, [key]: "This field is required." };
+          continue;
+        }
+        if (key === "confirmPassword") {
+          error = { ...error, [key]: "This field should match with password" };
         }
       }
     }
@@ -50,7 +58,8 @@ function Register() {
 
   // cek error
   const isError = () => {
-    return Object.values(registerForm).every((el) => !el);
+    const isMatch = registerForm.password === registerForm.confirmPassword;
+    return Object.values(registerForm).some((el) => !el) || !isMatch;
   };
 
   // onchange
@@ -83,8 +92,10 @@ function Register() {
             <InputField
               errorMessage={errorField[key]}
               value={registerForm[key]}
+              type={key === "email" ? "email" : "password"}
               key={key}
               label={key}
+              disabled={isRequest}
               onChange={onChange}
             />
           );
@@ -92,12 +103,26 @@ function Register() {
 
         {/* <InputField label="Password" /> */}
         <div className="flex justify-end gap-4 mt-2">
-          <Button label="Login Page" onClick={redirect} />
-          <Button label="Submit" onClick={submit} />
+          <Button label="Login Page" onClick={redirect} disabled={isRequest} />
+          <Button label="Submit" onClick={submit} disabled={isRequest} />
         </div>
       </div>
     </div>
   );
 }
+export async function getServerSideProps(context) {
+  const user = context.req.cookies["user"];
+  if (user) {
+    return {
+      redirect: {
+        destination: "/",
+        permanet: false,
+      },
+    };
+  }
 
+  return {
+    props: {},
+  };
+}
 export default Register;
